@@ -19,9 +19,6 @@ undirected-link-breed [ iurels iurel ]
 ;; gender
 ;; 0 - male 1 - female
 
-;; globals [ start endl ]
-
-
 to setup
   clear-all
   create-influencers max-influencers [
@@ -82,10 +79,6 @@ to go
 
   go-once
 
-  ask influencers with [ color = violet ]  [
-    show count iurel-neighbors
-  ]
-
   tick
 
 end
@@ -105,6 +98,12 @@ to go-once
     if ( bias-type = "gender-bias" ) [
 
       set bias-flag gender-bias
+
+    ]
+
+    if ( bias-type = "influencer-bias" ) [
+
+      set bias-flag influencer-bias
 
     ]
 
@@ -185,13 +184,58 @@ end
 
 to-report gender-bias
   let flag false
-  ask posts with [ current = true ] [
 
-    if ( gender != infl-gender ) [
-      set flag true
-    ]
+  let infl-gender-here 0
+
+  ask posts with [ current = true ] [
+    set infl-gender-here infl-gender
   ]
+
+  if ( infl-gender-here != gender ) [
+    set flag true
+  ]
+
   report flag
+end
+
+to-report influencer-bias
+
+  let flag false
+
+  let infl-who-val 0
+
+  ask posts with [ current = true ] [
+    set infl-who-val infl-who
+  ]
+
+  let is-neighbor member? influencer infl-who-val iurel-neighbors
+
+  if-else ( is-neighbor = true) [
+    set flag true
+  ]
+  [
+    if ( any? iurel-neighbors ) [
+      ask one-of iurel-neighbors [
+
+      let my-val influencer-val
+
+      ask posts with [ current = true ] [
+
+        if ( ( my-val < ( inf-val + 5 ) ) or ( my-val > ( inf-val - 5 ) ) ) [
+
+          set flag true
+
+        ]
+
+      ]
+
+    ]
+    ]
+
+  ]
+
+  report flag
+
 end
 
 ;; Happiness measure
@@ -286,7 +330,33 @@ to create-users-network
   ask users [
     create-urel-with one-of other users
   ]
+
+  ;;ask users [
+
+   ;; let another one-of other users
+
+   ;; let is-neighbor urel-neighbor? another
+
+    ;;if ( is-neighbor = false ) [
+
+      ;;let similar check-interests another
+
+    ;;]
+
+
+  ;;]
+
+
 end
+
+to-report check-interests [ another ]
+
+  let flag false
+
+  report flag
+
+end
+
 
 to create-network
   create-influencer-network
@@ -368,7 +438,7 @@ max-influencers
 max-influencers
 0
 100
-10.0
+11.0
 1
 1
 NIL
@@ -383,7 +453,7 @@ total-users
 total-users
 0
 1000
-95.0
+89.0
 1
 1
 NIL
@@ -481,7 +551,7 @@ random-bias-threshold
 random-bias-threshold
 0
 1
-0.1
+0.2
 0.1
 1
 NIL
@@ -514,8 +584,30 @@ true
 false
 "" ""
 PENS
-"happiness" 1.0 0 -955883 true "" "plot 100 * (count users with [ visited = true and happy = true ]) / (count users with [visited = true])"
-"pen-1" 1.0 0 -13840069 true "" "plot (100 * (count users with [ visited = true and color = green ]) / (count users with [visited = true]))"
+"happiness" 1.0 1 -955883 true "" "let den (count users with [visited = true])\n\nif ( den = 0 )[\n    set den 1\n]\n\nplot 1000 * (count users with [ visited = true and happy = true ]) / den "
+"pen-1" 1.0 1 -13840069 true "" "let den (count users with [visited = true])\n\nif (den  = 0 ) [\n     set den 1\n]\n\nplot (1000 * (count users with [ visited = true and color = green ]) / den )"
+
+MONITOR
+797
+420
+854
+465
+females
+count turtles with [ gender = 1 ]
+1
+1
+11
+
+MONITOR
+1203
+270
+1260
+315
+males
+count turtles with [ gender = 0 ]
+1
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
