@@ -1,18 +1,16 @@
-;; extensions [ nw ]
-
 breed [posts post]
 
 breed [users user]
 
 breed [influencers influencer]
 
-turtles-own [ current visited ]
+turtles-own [ current visited gender ]
 
-posts-own [ inf-val ]
+posts-own [ inf-val infl-gender  infl-who ]
 
-users-own [ approached gender start endl  happiness ]
+users-own [ approached start endl  happy ]
 
-influencers-own [ influencer-val  created   gender ]
+influencers-own [ influencer-val  created ]
 
 undirected-link-breed [ irels irel  ]
 undirected-link-breed [ urels urel  ]
@@ -47,6 +45,7 @@ to setup
     set approached false
     set start [ ]
     set endl [ ]
+    set happy false
     set-user-interests
   ]
 
@@ -79,17 +78,41 @@ to go
 
   if ( ticks = 0  ) [ pick-influencer-and-post ]
 
+  if ( ( count users with [ current = true ] ) = 0 ) [ stop ]
+
   go-once
 
+  ask influencers with [ color = violet ]  [
+    show count iurel-neighbors
+  ]
+
   tick
+
 end
 
 to go-once
-  ask turtles with [ visited = false and current = true ] [
 
-    let didLike random-bias
+  ask users with [ visited = false and current = true ] [
 
-    if-else ( didLike = true ) [
+    let bias-flag false
+
+    if ( bias-type = "random-bias" ) [
+
+      set bias-flag random-bias
+
+    ]
+
+    if ( bias-type = "gender-bias" ) [
+
+      set bias-flag gender-bias
+
+    ]
+
+    set happy measure-happiness
+
+    follow-or-unfollow-infl
+
+    if-else ( bias-flag = true and happy = true ) [
 
       set color green
 
@@ -110,38 +133,110 @@ to go-once
 end
 
 
+;; follow and unfollow based on happiness
+
+to follow-or-unfollow-infl
+
+  let infl-who-val 0
+
+  ask posts with [ current = true ] [
+    set infl-who-val infl-who
+  ]
+
+  let is-neighbor member? influencer infl-who-val  iurel-neighbors
+
+  if-else ( happy = true ) [
+
+    if ( is-neighbor = false ) [
+      create-iurel-with influencer infl-who-val [
+        set color red
+        set thickness 0.3
+      ]
+    ]
+
+  ]
+  [
+
+    if ( is-neighbor = true ) [
+
+      ask iurel who infl-who-val [
+        die
+      ]
+
+    ]
+  ]
+
+end
+
+
+;; bias methods
+
 to-report random-bias
 
   let prob random 100
 
-  if ( ( prob / 100 ) > 0.8 ) [
-
+  if ( ( prob / 100 ) > random-bias-threshold ) [
     report true
-
   ]
 
   report false
 
 end
 
+to-report gender-bias
+  let flag false
+  ask posts with [ current = true ] [
+
+    if ( gender != infl-gender ) [
+      set flag true
+    ]
+  ]
+  report flag
+end
+
+;; Happiness measure
+
+to-report measure-happiness
+  let flag false
+
+  let u-start start
+
+  let u-end endl
+
+  ask posts with [ current = true ] [
+
+    let results [ ]
+
+    ( foreach u-start u-end [ [a b]  -> set results lput ( (a < inf-val) and (b > inf-val) ) results ] )
+
+    let r-size length (filter [ i -> (i = true) ] results)
+
+    if ( r-size  > 0 ) [
+      set flag true
+    ]
+
+  ]
+  report flag
+end
+
+
+
 to pick-influencer-and-post
   let picked-infl-val 0
   let picked-infl-who 0
+  let picked-infl-gen 1
 
   ask one-of influencers with [ (count irel-neighbors) > 1 ] [
     set picked-infl-val influencer-val
-    set color yellow
+    set color violet
     set size size * 1.2
     set picked-infl-who who
-
+    set picked-infl-gen gender
     set current false
-
     set visited true
 
     ask iurel-neighbors [
-
       set current  true
-
     ]
 
   ]
@@ -151,9 +246,12 @@ to pick-influencer-and-post
     set shape "square"
     set size 2
     set inf-val picked-infl-val
+    set infl-gender picked-infl-gen
     set current true
+    set infl-who picked-infl-who
     move-to influencer picked-infl-who
   ]
+
 end
 
 
@@ -203,7 +301,8 @@ to layout
 end
 
 to set-user-interests
-    let u-start random 5
+
+  let u-start random 5
 
     while [ u-start < 40  ] [
 
@@ -283,8 +382,8 @@ SLIDER
 total-users
 total-users
 0
-100
-15.0
+1000
+95.0
 1
 1
 NIL
@@ -340,6 +439,83 @@ NIL
 NIL
 NIL
 1
+
+CHOOSER
+815
+79
+953
+124
+bias-type
+bias-type
+"random-bias" "gender-bias" "influencer-bias"
+0
+
+MONITOR
+841
+169
+974
+214
+total-likes-and-shares
+count users with [ (visited = true) and (color = green)  ]
+17
+1
+11
+
+MONITOR
+843
+235
+986
+280
+happiness-percenntage
+100 * (count users with [ visited = true and happy = true ]) / (count users with [visited = true])
+2
+1
+11
+
+SLIDER
+1093
+152
+1265
+185
+random-bias-threshold
+random-bias-threshold
+0
+1
+0.1
+0.1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+849
+302
+983
+347
+like-share-percentage
+100 * (count users with [ visited = true and color = green  ])/(count users with [ visited = true ])
+2
+1
+11
+
+PLOT
+925
+364
+1125
+514
+Happiness-Like-Share-Plot
+NIL
+NIL
+0.0
+100.0
+0.0
+100.0
+true
+false
+"" ""
+PENS
+"happiness" 1.0 0 -955883 true "" "plot 100 * (count users with [ visited = true and happy = true ]) / (count users with [visited = true])"
+"pen-1" 1.0 0 -13840069 true "" "plot (100 * (count users with [ visited = true and color = green ]) / (count users with [visited = true]))"
 
 @#$#@#$#@
 ## WHAT IS IT?
