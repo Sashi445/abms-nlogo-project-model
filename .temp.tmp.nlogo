@@ -478,7 +478,7 @@ total-users
 total-users
 0
 1000
-501.0
+500.0
 1
 1
 NIL
@@ -543,7 +543,7 @@ CHOOSER
 bias-type
 bias-type
 "random-bias" "gender-bias" "influencer-bias"
-0
+2
 
 MONITOR
 841
@@ -996,7 +996,7 @@ NetLogo 6.2.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="random-bias" repetitions="20" runMetricsEveryStep="true">
+  <experiment name="random-bias" repetitions="100" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
@@ -1009,6 +1009,42 @@ NetLogo 6.2.0
     </enumeratedValueSet>
     <enumeratedValueSet variable="bias-type">
       <value value="&quot;random-bias&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="total-users">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-connections">
+      <value value="25"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="gender-bias" repetitions="100" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
+    <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
+    <enumeratedValueSet variable="max-influencers">
+      <value value="15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="bias-type">
+      <value value="&quot;gender-bias&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="total-users">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-connections">
+      <value value="25"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="influencer-bias" repetitions="100" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
+    <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
+    <enumeratedValueSet variable="max-influencers">
+      <value value="15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="bias-type">
+      <value value="&quot;influencer-bias&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="total-users">
       <value value="500"/>
