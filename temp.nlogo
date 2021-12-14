@@ -999,8 +999,8 @@ NetLogo 6.2.0
   <experiment name="random-bias" repetitions="20" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count users with [ color = green and visited = true ] / count users with [ visited = true ]</metric>
-    <metric>count users with [ visited = true and happy = true ] / count users with [ visited = true ]</metric>
+    <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
+    <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
     <enumeratedValueSet variable="max-influencers">
       <value value="15"/>
     </enumeratedValueSet>
