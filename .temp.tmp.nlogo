@@ -21,6 +21,8 @@ undirected-link-breed [ iurels iurel ]
 
 to setup
   clear-all
+
+  ;; creating influences
   create-influencers max-influencers [
     set color orange
     set shape "person"
@@ -34,6 +36,7 @@ to setup
     set pcolor white
   ]
 
+  ;;creating users
   create-users total-users [
     set color blue
     set shape "person"
@@ -46,6 +49,7 @@ to setup
     set-user-interests
   ]
 
+  ;;creating network
   create-network
 
    ask irels[
@@ -68,6 +72,7 @@ to setup
     set visited false
   ]
 
+  ;; pick an influener randomly and create post
   pick-influencer-and-post
 
   reset-ticks
@@ -77,8 +82,10 @@ to go
 
   ;;if ( ticks = 0  ) [ pick-influencer-and-post ]
 
+  ;; checking whether any neighbours are present or not
   if ( ( count users with [ current = true ] ) = 0 ) [ stop ]
 
+  ;; post posted by influencer will go to his neighbopurs and so on
   go-once
 
   tick
@@ -172,6 +179,7 @@ end
 
 ;; bias methods
 
+;; random bias
 to-report random-bias
 
   let prob random 100
@@ -184,6 +192,7 @@ to-report random-bias
 
 end
 
+;; gender-bias
 to-report gender-bias
   let flag false
 
@@ -200,6 +209,7 @@ to-report gender-bias
   report flag
 end
 
+;; influencer bias
 to-report influencer-bias
 
   let flag false
@@ -241,7 +251,6 @@ to-report influencer-bias
 end
 
 ;; Happiness measure
-
 to-report measure-happiness
   let flag false
 
@@ -265,8 +274,7 @@ to-report measure-happiness
   report flag
 end
 
-
-
+;; picking influencer and creating post by that influencer
 to pick-influencer-and-post
   let picked-infl-val 0
   let picked-infl-who 0
@@ -300,7 +308,7 @@ to pick-influencer-and-post
 
 end
 
-
+;; creating network between users and influencers
 to create-user-influencer-network
   ask users [
     let my-id who
@@ -312,7 +320,7 @@ to create-user-influencer-network
   ]
 end
 
-
+;; creating network among influencer based on their interests
 to create-influencer-network
   ask influencers [
     let my-val influencer-val
@@ -327,7 +335,7 @@ to create-influencer-network
   ]
 end
 
-
+;; creating network among users based on their interests
 to create-users-network
 
   let user-interests [ ]
@@ -389,12 +397,13 @@ to create-network
   create-user-influencer-network
 end
 
-
+;; layout
 to layout
   layout-spring (turtles with [ breed != posts ]) links 0.2 8 1
   display
 end
 
+;; assigning interests to the users
 to set-user-interests
 
   let u-start random 5
@@ -411,10 +420,10 @@ to set-user-interests
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-242
-49
-713
-521
+217
+48
+688
+520
 -1
 -1
 14.030303030303031
@@ -438,10 +447,10 @@ ticks
 30.0
 
 BUTTON
-91
-26
-154
-59
+77
+57
+140
+90
 NIL
 setup
 NIL
@@ -455,57 +464,40 @@ NIL
 1
 
 SLIDER
-17
-89
-189
-122
+745
+55
+917
+88
 max-influencers
 max-influencers
 0
 100
-15.0
+50.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-20
-139
-192
-172
+746
+104
+918
+137
 total-users
 total-users
 0
 1000
-500.0
+1000.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-21
-210
-84
-243
-if-net
-create-influencer-network
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-134
-227
-200
-260
+75
+91
+141
+124
 NIL
 layout
 T
@@ -519,10 +511,10 @@ NIL
 1
 
 BUTTON
-71
-293
-134
-326
+77
+126
+140
+159
 NIL
 go
 T
@@ -536,20 +528,20 @@ NIL
 1
 
 CHOOSER
-815
-79
-953
-124
+749
+250
+887
+295
 bias-type
 bias-type
 "random-bias" "gender-bias" "influencer-bias"
 2
 
 MONITOR
-841
-169
-974
-214
+962
+105
+1095
+150
 total-likes-and-shares
 count users with [ (visited = true) and (color = green)  ]
 17
@@ -557,10 +549,10 @@ count users with [ (visited = true) and (color = green)  ]
 11
 
 MONITOR
-843
-235
-986
-280
+958
+154
+1101
+199
 happiness-percenntage
 100 * (count users with [ visited = true and happy = true ]) / (count users with [visited = true])
 2
@@ -568,10 +560,10 @@ happiness-percenntage
 11
 
 SLIDER
-1093
-152
-1265
-185
+749
+201
+921
+234
 random-bias-threshold
 random-bias-threshold
 0
@@ -583,10 +575,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-849
-302
-983
-347
+965
+201
+1099
+246
 like-share-percentage
 100 * (count users with [ visited = true and color = green  ])/(count users with [ visited = true ])
 2
@@ -594,10 +586,10 @@ like-share-percentage
 11
 
 PLOT
-925
-364
-1125
-514
+751
+313
+1091
+521
 Happiness-Like-Share-Plot
 NIL
 NIL
@@ -613,10 +605,10 @@ PENS
 "pen-1" 1.0 1 -13840069 true "" "let den (count users with [visited = true])\n\nif (den  = 0 ) [\n     set den 1\n]\n\nplot (1000 * (count users with [ visited = true and color = green ]) / den )"
 
 MONITOR
-797
-420
-854
-465
+1026
+55
+1083
+100
 females
 count turtles with [ gender = 1 ]
 1
@@ -624,10 +616,10 @@ count turtles with [ gender = 1 ]
 11
 
 MONITOR
-1203
-270
-1260
-315
+968
+55
+1025
+100
 males
 count turtles with [ gender = 0 ]
 1
@@ -635,56 +627,246 @@ count turtles with [ gender = 0 ]
 11
 
 SLIDER
-974
-57
-1146
-90
+747
+152
+919
+185
 max-connections
 max-connections
 0
 total-users
-25.0
+50.0
 1
 1
 NIL
 HORIZONTAL
 
 @#$#@#$#@
-## WHAT IS IT?
+# Overview
 
-(a general understanding of what the model is trying to show or explain)
+## Purpose
 
-## HOW IT WORKS
+The purpose of this model is to know how influencer bias and gender bias plays a role in a user's decision of reacting to posts. And how these biases make difference in reach and decisions . The ultimate purpose of the model, which will be presented in follow-up work, is to explore difference biases.
 
-(what rules the agents use to create the overall behavior of the model)
+## Entity, State variables and scales
 
-## HOW TO USE IT
+Model entities are users, influencers and posts. All state variables characterizing these entities are listed in the below image
 
-(how to use the model, including a description of each of the items in the Interface tab)
+### Global-variables
 
-## THINGS TO NOTICE
+1. total-users - total no of users in the model
 
-(suggested things for the user to notice while running the model)
+2. max-influencers - total no of influencers in the model
 
-## THINGS TO TRY
+3. random-bias-threshold - value that lies between 0-1 if the values is greater than random-bias-threshold there is an high chance of user liking the post
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+4. bias-type - its a chooser that contains
+    1. Random-bias
+    2. Gender-bias
+    3. Influencer-bias
 
-## EXTENDING THE MODEL
+5. max-connections - maximum number of friends an user can have.
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+### Scale
 
-## NETLOGO FEATURES
+In this model one tick is equal to one wave
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+## Process overviewing and scheduling
 
-## RELATED MODELS
+![process](https://res.cloudinary.com/dcjfrnxqn/image/upload/c_scale,w_900/v1639557951/ABMS-2_5_abya7q.png)
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+### influencer creates post
 
-## CREDITS AND REFERENCES
+Picking the influencers randomly those who has more than one neighboring influencers. That particular influencer post their content. The state variables of post get updated here
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+### Neighboring users and influencers
+
+sharing the post to its neighbours 
+
+### measure-happiness
+
+the value of happy depends on the users. Every user will have some set of interests whenever any post reached to the user depending on the infl-val of post comparing with user interests it return a flag that can be either true or false
+
+### bias
+
+based on the bias-type that particular submodel get executed and returns a flag that can be either true or false 
+
+### like/dislike 
+
+based on flags returned by bias and measure-happiness user can like or dislike the post posted by influencer
+
+![like-dislike](https://res.cloudinary.com/dcjfrnxqn/image/upload/c_scale,w_900/v1639555856/ABMS-1_blyru6.png)
+
+# Design
+
+## Basic principles
+
+In the current tenure of social media,liking or disliking a post is one's choice.and there will be some factors which influences the decision to like or dislike a post.Hence some bias like influencer bias ,gender bias and random bias comes into picture.The effect of these biases are spot on and cannot be neglected.
+
+## Emergence
+
+The count of post likes emerges according to bias choosed and percentage of likes and rate of happiness can be known.
+
+## Adaptation
+
+When the post reaches any user or influencer,they can like or dislike the post.It is assumed that if liked then the user/influencer will share it with their neighbors.and the behavior of user and influencer completely modeled with a set of rules and assumptions.
+
+## Objectives
+
+## Predictions
+
+During the initialization of model i.e. creating users and influencers which are different breeds,users connect to influencers randomly.Then after we run the model the users reorder themselves based on certain assumptions of follow-unfollow model.
+
+## Sensing
+
+## Interactions
+
+## Stochasticity
+
+## Observation
+
+# Details
+
+## Initialization
+
+Initially there are users and influencers at tick = 0. Most of the values chosen for the initial state are arbitrarily taken. State variables for users and influencers at the time of initialization 
+
+1. Users
+	1. Gender - randomly choosing their gender
+	2. Current - false 
+	3. Visited - false
+	4. Approached - false
+	5. Start - randomly choosing some starting ranges of the user interest
+	6. Endl - based on starting ranges the end range is been designed
+	7. Happy - false
+
+2. Influencers
+	1. Gender - randomly choosing their gender
+	2. Current - false 
+	3. Visited - false
+	4. Influencer-val - random number between [0-40]
+
+3. Post
+	1. infl-who - id of influencer who posted the post 
+	2. infl-gender - gender of influencer who posted the post
+	3. inf-val - interest of influencer who posted the post
+
+## Input data
+
+The current model does not use input from external sources
+
+## Submodels
+
+### Random-bias
+
+Randomly taking some value in between 0-100 and dividing with 100 and comparing with random-bias-threshold, if the value is greater than the random-bias-threshold the user has more chance of liking the post.
+
+```
+to-report random-bias
+  let prob random 100
+  if ( ( prob / 100 ) > random-bias-threshold ) [
+    report true
+  ]
+  report false
+end
+```
+
+### Gender-bias
+
+In this bias, the liking of the post depends on gender which gender influencer posted the content. If the user gender is opposite to the gender of the influencer there is a chance of the user liking the post
+
+```
+to-report gender-bias
+  let flag false
+  let infl-gender-here 0
+  ask posts with [ current = true ] [
+    set infl-gender-here infl-gender
+  ]
+  if ( infl-gender-here != gender ) [
+    set flag true
+  ]
+  report flag
+end
+```
+
+### Influencer-bias
+
+```
+to-report influencer-bias
+  let flag false
+  let infl-who-val 0
+  ask posts with [ current = true ] [
+    set infl-who-val infl-who
+  ]
+  let is-neighbor member? influencer infl-who-val iurel-neighbors
+  if-else ( is-neighbor = true) [
+    set flag true
+  ]
+  [
+    if ( any? iurel-neighbors ) [
+      ask one-of iurel-neighbors [
+      let my-val influencer-val
+      ask posts with [ current = true ] [
+        if ( ( my-val < ( inf-val + 5 ) ) or ( my-val > ( inf-val - 5 ) ) ) [
+          set flag true
+        ]
+      ]
+    ]
+    ]
+  ]
+  report flag
+end
+```
+
+### Follow-Or-Unfollow
+
+At initialization the users are linked to the influencers based on their interests. But when any influencer posted a content the users may or may not like the content depending on the user happiness the users can follow or unfollow the influencers
+
+```
+to follow-or-unfollow-infl
+  let infl-who-val 0
+  ask posts with [ current = true ] [
+    set infl-who-val infl-who
+  ]
+  let is-neighbor member? influencer infl-who-val  iurel-neighbors
+  if-else ( happy = true ) [
+    if ( is-neighbor = false ) [
+      create-iurel-with influencer infl-who-val [
+        set color red
+        set thickness 0.3
+      ]
+    ]
+  ]
+  [
+    if ( is-neighbor = true ) [
+      ask iurel who infl-who-val [
+        die
+      ]
+    ]
+  ]
+end
+```
+
+### Measure-Happiness
+
+Every user will have a state variable called happy, the value of happy depends on the users. Every user will have some set of interests whenever any post reached to the user depending on the type of post the value of happiness is been calculated.
+
+```
+to-report measure-happiness
+  let flag false
+  let u-start start
+  let u-end endl
+  ask posts with [ current = true ] [
+    let results [ ]
+    ( foreach u-start u-end [ [a b]  -> set results lput ( (a < inf-val) and (b > inf-val) ) results ] )
+    let r-size length (filter [ i -> (i = true) ] results)
+    if ( r-size  > 0 ) [
+      set flag true
+    ]
+  ]
+  report flag
+end
+```
 @#$#@#$#@
 default
 true
@@ -991,18 +1173,18 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.0
+NetLogo 6.2.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="random-bias" repetitions="100" runMetricsEveryStep="true">
+  <experiment name="random-bias" repetitions="1000" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
     <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
     <enumeratedValueSet variable="max-influencers">
-      <value value="15"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="random-bias-threshold">
       <value value="0.2"/>
@@ -1011,28 +1193,46 @@ NetLogo 6.2.0
       <value value="&quot;random-bias&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="total-users">
-      <value value="500"/>
+      <value value="1000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-connections">
-      <value value="25"/>
+      <value value="50"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="gender-bias" repetitions="100" runMetricsEveryStep="true">
+  <experiment name="gender-bias" repetitions="1000" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
     <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
     <enumeratedValueSet variable="max-influencers">
-      <value value="15"/>
+      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="bias-type">
       <value value="&quot;gender-bias&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="total-users">
-      <value value="500"/>
+      <value value="1000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="max-connections">
-      <value value="25"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="influencer-bias" repetitions="1000" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count users with [ color = green and visited = true ] / count turtles with [ visited = true ]</metric>
+    <metric>count users with [ visited = true and happy = true ] / count turtles with [ visited = true ]</metric>
+    <enumeratedValueSet variable="max-influencers">
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="bias-type">
+      <value value="&quot;influencer-bias&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="total-users">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-connections">
+      <value value="50"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="influencer-bias" repetitions="100" runMetricsEveryStep="true">
