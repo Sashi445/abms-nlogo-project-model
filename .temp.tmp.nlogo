@@ -646,11 +646,13 @@ HORIZONTAL
 
 ## Purpose
 
-The purpose of this model is to know how influencer bias and gender bias plays a role in a user's decision of reacting to posts. And how these biases make difference in reach and decisions . The ultimate purpose of the model, which will be presented in follow-up work, is to explore difference biases.
+The purpose of this model is to know how different kinds of biases play a role in a user's decision of reacting to posts. And how these different kinds of biases make significant differences in getting reach for the posts shared by different influencers.The ultimate purpose of the model, which will be presented in follow-up work, is to explore different biases.
 
 ## Entity, State variables and scales
 
 Model entities are users, influencers and posts. All state variables characterizing these entities are listed in the below image
+
+![state variables of entites](https://res.cloudinary.com/dcjfrnxqn/image/upload/v1639563144/entity_variables_fqmamr.png)
 
 ### Global-variables
 
@@ -669,7 +671,7 @@ Model entities are users, influencers and posts. All state variables characteriz
 
 ### Scale
 
-In this model one tick is equal to one wave
+In this model one tick is equal to one level of graph traversal.
 
 ## Process overviewing and scheduling
 
@@ -681,19 +683,21 @@ Picking the influencers randomly those who has more than one neighboring influen
 
 ### Neighboring users and influencers
 
-sharing the post to its neighbours 
+sharing the post to its neighbour users and influencers 
 
 ### measure-happiness
 
-the value of happy depends on the users. Every user will have some set of interests whenever any post reached to the user depending on the infl-val of post comparing with user interests it return a flag that can be either true or false
+The value of happy depends on the users. Every user will have some set of interests whenever any post reached to the user depending on the infl-val of post comparing with user interests it return a flag that can be either true or false
 
 ### bias
 
-based on the bias-type that particular submodel get executed and returns a flag that can be either true or false 
+Based on the bias-type that particular submodel get executed and returns a flag that can be either be true or false 
 
 ### like/dislike 
 
-based on flags returned by bias and measure-happiness user can like or dislike the post posted by influencer
+The decision of user to like or dislike the post is based on above 2 factors
+1. Bias
+2. Happiness
 
 ![like-dislike](https://res.cloudinary.com/dcjfrnxqn/image/upload/c_scale,w_900/v1639555856/ABMS-1_blyru6.png)
 
@@ -715,7 +719,7 @@ When the post reaches any user or influencer,they can like or dislike the post.I
 
 ## Predictions
 
-During the initialization of model i.e. creating users and influencers which are different breeds,users connect to influencers randomly.Then after we run the model the users reorder themselves based on certain assumptions of follow-unfollow model.
+During the initialization of model i.e. creating users and influencers which are different breeds,users connect to influencers randomly.when we run the model an influencer posts the content it reaches to users based on that content posted by influencer, users can decide to follow or unfollow the influencer
 
 ## Sensing
 
@@ -723,13 +727,18 @@ During the initialization of model i.e. creating users and influencers which are
 
 ## Stochasticity
 
-## Observation
+## Observations
+
+Results to be observed in this model
+1. Count of likes and its percentage after every run indicates the response of different users to that post.
+2. Statistical analysis to know the significance between biases.
+
 
 # Details
 
 ## Initialization
 
-Initially there are users and influencers at tick = 0. Most of the values chosen for the initial state are arbitrarily taken. State variables for users and influencers at the time of initialization 
+Initially there are users, influencers and a post at tick = 0. Most of the values chosen for the initial state are arbitrarily taken. Initial values for users, influencers and post at the time of initialization 
 
 1. Users
 	1. Gender - randomly choosing their gender
@@ -790,6 +799,8 @@ end
 ```
 
 ### Influencer-bias
+
+
 
 ```
 to-report influencer-bias
@@ -867,6 +878,26 @@ to-report measure-happiness
   report flag
 end
 ```
+
+## Experiment
+
+Using the **BehaviorSpace tool**, we exported the results to a spreadsheet that contains like-share percentage for each bias type separately with the same characteristics.That includes number of users, number of repetitions and maximum influencers count. Considering this we have taken users of 500 and 15 influencer counts,100 repetitions were done and exported those as spreadsheets separately.
+
+To infer that data,**ttest** have been done to test the significance between Random Bias-Gender bias and Random bias-Influencer Bias each pair of biases for Like percentage.
+
+## Results
+
+1. TTest between Random and Gender biases
+	1. TTest for Gender and random biases using like percentage:0.0000000006623605061
+
+2. TTest between Random and Influencer biases	
+	1. TTest for Influence and random biases using like percentage:0.006565572736
+
+## Citation:
+1. Wilensky, U. (2005). NetLogo Preferential Attachment model. http://ccl.northwestern.edu/netlogo/models/PreferentialAttachment. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+2. Wilensky, U. (1999). NetLogo. http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL
+
+
 @#$#@#$#@
 default
 true
